@@ -1,0 +1,49 @@
+baseUrl="$1"
+baseOrigin="$2"
+baseBranch="$3"
+baseName="$4"
+headUrl="$5"
+headOrigin="$6"
+headBranch="$7"
+headName="$8"
+
+if [ "$baseName" != "$headName" ]
+then
+	exit 1
+fi
+
+repoName="$baseName" && cd ~
+
+if [ ! -d "$baseOrigin" ]
+then
+	mkdir $baseOrigin
+fi
+
+cd $baseOrigin
+
+if [ ! -d "$repoName" ]
+then
+	git clone $baseUrl
+fi
+
+cd $repoName
+git remote rm $baseOrigin
+git remote add $baseOrigin $baseUrl
+git remote rm $headOrigin
+git remote add $headOrigin $headUrl
+
+git fetch $baseOrigin $baseBranch
+git fetch $headOrigin $headBranch
+
+if [ "git branch --list $headOrigin-$headBranch" ]
+then
+	git checkout master && git branch -D $headOrigin-$headBranch
+fi
+
+git checkout -b $headOrigin-$headBranch $headOrigin/$headBranch
+
+# next to todo
+# git diff $baseOrigin/$baseBranch $headOrigin/$headBranch --name-only
+# git checkout master && git branch -D $headOrigin-$headBranch
+
+exit $?
