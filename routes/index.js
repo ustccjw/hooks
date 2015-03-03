@@ -13,7 +13,7 @@ app.post('/pull-request', pullRequestServer)
 app.get('/', test)
 
 function* pullRequestServer() {
-	var body = yield parse.json(req)
+	var body = yield parse.json(this)
 	var action = body.action
 	var head = body.pull_request.head
 	var base = body.pull_request.base
