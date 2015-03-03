@@ -1,7 +1,8 @@
 'use strict'
 
-var exec = require('mz/child_process').exec
 var path = require('path')
+var exec = require('mz/child_process').exec
+var request = require('request')
 var router = require('koa-router')
 var parse = require('co-body')
 var app = require('../app')
@@ -9,8 +10,6 @@ var app = require('../app')
 // router
 app.use(router(app))
 app.post('/pull-request', pullRequestServer)
-
-app.get('/', test)
 
 function* pullRequestServer() {
 	var body = yield parse.json(this)
@@ -52,36 +51,15 @@ function* pullRequestServer() {
 			var diff = res[0].split('\n')
 			diff.pop()
 			console.log(diff)
+
+			var url = 'https://api.github.com/repos/ustccjw/ordered-read-streams/statuses/8f55a03f39da94ead7c9c37757fb796f1e348e1b'
+			request.post(url, {state: 'failure'}, function (error, response, body) {
+
+			})
+
+
 		} catch (err) {
 			console.log(err)
 		}
-	}
-}
-
-function* test() {
-	var baseRepo = {}
-	var headRepo = {}
-	var params = [
-		baseRepo.url = 'https://github.com/armed/ordered-read-streams',
-		baseRepo.origin = 'armed',
-		baseRepo.branch = 'master',
-		baseRepo.name = 'ordered-read-streams',
-		headRepo.url = 'https://github.com/ustccjw/ordered-read-streams',
-		headRepo.origin = 'ustccjw',
-		headRepo.branch = 'test',
-		headRepo.name = 'ordered-read-streams'
-	].join(' ')
-	try{
-		var root = process.cwd()
-		yield exec('bin/.pull-request ' + params, {cwd: root})
-		var cmd = 'git diff ' + baseRepo.origin + '/' + baseRepo.branch + ' ' + headRepo.origin + '/' + headRepo.branch + ' --name-only'
-		var home = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']
-		root = path.resolve(home, baseRepo.origin, baseRepo.name)
-		var res = yield exec(cmd, {cwd: root})
-		var diff = res[0].split('\n')
-		diff.pop()
-		console.log(diff)
-	} catch (err) {
-		console.log(err)
 	}
 }
