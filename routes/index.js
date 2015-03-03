@@ -39,7 +39,7 @@ function* pullRequestServer() {
 		headRepo.branch,
 		headRepo.name
 	].join(' ')
-	if (action === 'opened') {
+	if (action === 'opened' || action === 'synchronize') {
 
 		// .editorconfig check
 		try{
