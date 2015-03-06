@@ -5,7 +5,9 @@ var exec = require('mz/child_process').exec
 var request = require('request')
 var router = require('koa-router')
 var parse = require('co-body')
+var editorconfigValidate = require('editorconfig-validate')
 var app = require('../app')
+var pushState = require('../lib/push_state')
 
 // router
 app.use(router(app))
@@ -42,21 +44,17 @@ function* pullRequestServer() {
 
 		// .editorconfig check
 		try{
-			var root = process.cwd()
-			yield exec('bin/.pull-request ' + params, {cwd: root})
+			var root = path.resolve(__dirname, '../')
+			yield exec('./bin/.pull-request ' + params, {cwd: root})
 			var cmd = 'git diff ' + baseRepo.origin + '/' + baseRepo.branch + ' ' + headRepo.origin + '/' + headRepo.branch + ' --name-only'
-			var home = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']
-			root = path.resolve(home, baseRepo.origin, baseRepo.name)
-			var res = yield exec(cmd, {cwd: root})
+			var repo = path.resolve(root, 'repo', baseRepo.origin, baseRepo.name)
+			var res = yield exec(cmd, {cwd: repo})
 			var diff = res[0].split('\n')
 			diff.pop()
 			console.log(diff)
-
-			var url = 'https://api.github.com/repos/ustccjw/ordered-read-streams/statuses/8f55a03f39da94ead7c9c37757fb796f1e348e1b'
-			request.post(url, {state: 'failure'}, function (error, response, body) {
-
-			})
-
+			// editorconfigValidate(diff, )
+			// var repo = baseRepo.origin + '/' + baseRepo.branch
+			// pushState(repo, sha, state, description, username, password)
 
 		} catch (err) {
 			console.log(err)
