@@ -48,12 +48,17 @@ function* pullRequestServer() {
 			var root = path.resolve(__dirname, '../')
 			yield exec('./bin/.pull-request ' + params, {cwd: root})
 			var cmd = 'git diff ' + baseRepo.origin + '/' + baseRepo.branch + ' ' + headRepo.origin + '/' + headRepo.branch + ' --name-only'
-			var repo = path.resolve(root, 'repo', baseRepo.origin, baseRepo.name)
-			var res = yield exec(cmd, {cwd: repo})
+			var res = yield exec(cmd, {
+				cwd: path.resolve(root, 'repo', baseRepo.origin, baseRepo.name)
+			})
 			var diffFiles = res[0].split('\n')
 			diffFiles.pop()
 			console.log(diffFiles)
 
+			var num = 1
+			var reports = []
+			var repo = baseRepo.origin + '/' + baseRepo.branch
+			var sha = head.sha
 			var stream = gulp.src(diffFiles, {
 				cwd: repo,
 				buffer: false
@@ -61,15 +66,28 @@ function* pullRequestServer() {
 			pipe(gulpEditorconfigValidate()).
 			on('report', function (report, path) {
 				console.log(report, path)
+				if (report) {
+					reports.push({
+						path: path,
+						report: report
+					})
+				}
+				if (num++ === diffFiles.length) {
+					if (!reports.length) {
+						var description = JSON.stringify(reports, null, '\t')
+						pushState(repo, sha, 'failure', description)
+					} else {
+						pushState(repo, sha, 'success', 'All is well')
+					}
+				}
 			}).
 			on('error', function (err, path) {
 				console.error(err, path)
 			})
-			// var repo = baseRepo.origin + '/' + baseRepo.branch
-			// pushState(repo, sha, state, description, username, password)
 
 		} catch (err) {
 			console.log(err)
 		}
+		this.status = 204
 	}
 }

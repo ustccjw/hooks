@@ -43,6 +43,5 @@ git checkout -b $headOrigin-$headBranch $headOrigin/$headBranch
 
 # next to todo
 # git diff $baseOrigin/$baseBranch $headOrigin/$headBranch --name-only
-# git checkout master && git branch -D $headOrigin-$headBranch
 
 exit $?
