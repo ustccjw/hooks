@@ -5,7 +5,8 @@ var exec = require('mz/child_process').exec
 var request = require('request')
 var router = require('koa-router')
 var parse = require('co-body')
-var editorconfigValidate = require('editorconfig-validate')
+var gulp = require('gulp')
+var gulpEditorconfigValidate = require('editorconfig-validate/gulpplugin')
 var app = require('../app')
 var pushState = require('../lib/push_state')
 
@@ -48,16 +49,21 @@ function* pullRequestServer() {
 			yield exec('./bin/.pull-request ' + params, {cwd: root})
 			var cmd = 'git diff ' + baseRepo.origin + '/' + baseRepo.branch + ' ' + headRepo.origin + '/' + headRepo.branch + ' --name-only'
 			var repo = path.resolve(root, 'repo', baseRepo.origin, baseRepo.name)
-			res = yield exec('ls', {cwd: repo})
-			console.log(res)
-			res = yield exec(cmd, {cwd: repo})
-			var diff = res[0].split('\n')
-			diff.pop()
+			var res = yield exec(cmd, {cwd: repo})
+			var diffFiles = res[0].split('\n')
+			diffFiles.pop()
 			console.log(diff)
-			editorconfigValidate(diff).then(function (report, path) {
+
+			var stream = gulp.src([diff], {
+				cwd: repo,
+				buffer: false
+			}).
+			pipe(gulpEditorconfigValidate()).
+			on('report', function (report, path) {
 				console.log(report, path)
-			}).catch(function (err) {
-				throw err
+			}).
+			on('error', function (err, path) {
+				console.error(err, path)
 			})
 			// var repo = baseRepo.origin + '/' + baseRepo.branch
 			// pushState(repo, sha, state, description, username, password)
