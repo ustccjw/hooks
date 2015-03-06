@@ -74,7 +74,9 @@ function* pullRequestServer() {
 				}
 				if (num++ === diffFiles.length) {
 					console.log('test')
+					console.log(reports)
 					if (!reports.length) {
+						console.log('astart')
 						var description = JSON.stringify(reports, null, '\t')
 						console.log('start')
 						var state = pushState(repo, sha, 'failure', description)
