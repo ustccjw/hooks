@@ -52,9 +52,9 @@ function* pullRequestServer() {
 			var res = yield exec(cmd, {cwd: repo})
 			var diffFiles = res[0].split('\n')
 			diffFiles.pop()
-			console.log(diff)
+			console.log(diffFiles)
 
-			var stream = gulp.src([diff], {
+			var stream = gulp.src([diffFiles], {
 				cwd: repo,
 				buffer: false
 			}).
