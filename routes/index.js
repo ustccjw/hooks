@@ -48,6 +48,7 @@ function* pullRequestServer() {
 			yield exec('./bin/.pull-request ' + params, {cwd: root})
 			var cmd = 'git diff ' + baseRepo.origin + '/' + baseRepo.branch + ' ' + headRepo.origin + '/' + headRepo.branch + ' --name-only'
 			var repo = path.resolve(root, 'repo', baseRepo.origin, baseRepo.name)
+			console.log(repo)
 			var res = yield exec(cmd, {cwd: repo})
 			var diff = res[0].split('\n')
 			diff.pop()
