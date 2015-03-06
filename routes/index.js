@@ -57,7 +57,7 @@ function* pullRequestServer() {
 
 			var num = 1
 			var reports = []
-			var repo = baseRepo.origin + '/' + baseRepo.branch
+			var repo = baseRepo.origin + '/' + baseRepo.name
 			var sha = head.sha
 			var stream = gulp.src(diffFiles, {
 				cwd: path.resolve(root, 'repo', baseRepo.origin, baseRepo.name),
@@ -75,7 +75,6 @@ function* pullRequestServer() {
 				if (num++ === diffFiles.length) {
 					if (reports.length) {
 						var description = JSON.stringify(reports, null, '\t')
-						console.log(repo, sha)
 						pushState(repo, sha, 'failure', description).then(function(response) {
 							console.log('test', response)
 						})
