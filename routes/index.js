@@ -60,7 +60,7 @@ function* pullRequestServer() {
 			var repo = baseRepo.origin + '/' + baseRepo.branch
 			var sha = head.sha
 			var stream = gulp.src(diffFiles, {
-				cwd: repo,
+				cwd: path.resolve(root, 'repo', baseRepo.origin, baseRepo.name),
 				buffer: false
 			}).
 			pipe(gulpEditorconfigValidate()).
