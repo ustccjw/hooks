@@ -45,8 +45,7 @@ function* pullRequestServer() {
 		// .editorconfig check
 		try{
 			var root = path.resolve(__dirname, '../')
-			var res = yield exec('./bin/.pull-request ' + params, {cwd: root})
-			console.log(res)
+			yield exec('./bin/.pull-request ' + params, {cwd: root})
 			var cmd = 'git diff ' + baseRepo.origin + '/' + baseRepo.branch + ' ' + headRepo.origin + '/' + headRepo.branch + ' --name-only'
 			var repo = path.resolve(root, 'repo', baseRepo.origin, baseRepo.name)
 			res = yield exec('ls', {cwd: repo})
@@ -55,7 +54,11 @@ function* pullRequestServer() {
 			var diff = res[0].split('\n')
 			diff.pop()
 			console.log(diff)
-			// editorconfigValidate(diff, )
+			editorconfigValidate(diff).then(function (report, path) {
+				console.log(report, path)
+			}).catch(function (err) {
+				throw err
+			})
 			// var repo = baseRepo.origin + '/' + baseRepo.branch
 			// pushState(repo, sha, state, description, username, password)
 
