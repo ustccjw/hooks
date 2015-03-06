@@ -79,6 +79,8 @@ function* pullRequestServer() {
 						reports.forEach(function (obj) {
 							description += obj.path + ': ' + JSON.stringify(reports)
 						})
+						console.log(description)
+						console.log(description.length)
 						pushState(repo, sha, 'failure', description).then(function (response) {
 							console.log(response)
 						})
