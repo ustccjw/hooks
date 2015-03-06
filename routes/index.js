@@ -54,7 +54,7 @@ function* pullRequestServer() {
 			diffFiles.pop()
 			console.log(diffFiles)
 
-			var stream = gulp.src([diffFiles], {
+			var stream = gulp.src(diffFiles, {
 				cwd: repo,
 				buffer: false
 			}).
