@@ -73,9 +73,12 @@ function* pullRequestServer() {
 					})
 				}
 				if (num++ === diffFiles.length) {
+					console.log('test')
 					if (!reports.length) {
 						var description = JSON.stringify(reports, null, '\t')
-						pushState(repo, sha, 'failure', description)
+						console.log('start')
+						var state = pushState(repo, sha, 'failure', description)
+						console.log(state)
 					} else {
 						pushState(repo, sha, 'success', 'All is well')
 					}
