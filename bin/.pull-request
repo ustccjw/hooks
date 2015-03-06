@@ -11,8 +11,7 @@ if [ "$baseName" != "$headName" ]
 then
 	exit 1
 fi
-ls
-repoName="$baseName" && cd repo
+repoName="$baseName" && mkdir repo && cd repo
 
 if [ ! -d "$baseOrigin" ]
 then
